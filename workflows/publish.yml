@@ -1,0 +1,40 @@
+# .github/workflows/publish.yml
+
+name: Publish Water News to Royab
+
+# ربات را فعال کن
+on:
+  # هر 6 ساعت یکبار (در دقیقه صفر ساعت)
+  schedule:
+    - cron: '0 */6 * * *'
+  # به صورت دستی هم بتوانیم اجرا کنیم
+  workflow_dispatch:
+
+# تعریف کارها
+jobs:
+  publish:
+    # اجرا روی یک کامپیوتر لینوکس در گیت‌هاب
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. کدها را از ریپو دانلود کن
+      - uses: actions/checkout@v4
+
+      # 2. محیط پایتون را آماده کن
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. ابزارهای لازم پایتون را نصب کن (مثلاً برای ارتباط با وب)
+      - name: Install dependencies
+        run: pip install requests
+
+      # 4. اسکریپت انتشار را اجرا کن
+      - name: Run publishing script
+        run: python scripts/publish.py
+        env:
+          # متغیر محیطی: آدرس API سایت رویاپ
+          ROYAB_API_URL: ${{ secrets.ROYAB_API_URL }}
+          # متغیر محیطی: کلید امنیتی برای تایید هویت
+          ROYAB_API_KEY: ${{ secrets.ROYAB_API_KEY }}
