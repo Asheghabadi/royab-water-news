@@ -1,28 +1,29 @@
-name: Deploy News to VPS
+name: Publish Water News to Royab
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'news/**' # تنها زمانی که تغییری در پوشه اخبار رخ دهد اجرا می‌شود
-  workflow_dispatch: # امکان اجرای دستی اکشن از پنل گیت‌هاب
+      - 'news/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Copy news files via SSH
+      - name: Copy news.json to VPS
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "news/*"
+          source: "news/news.json"
           target: "/var/www/royab-site/"
-          strip_components: 1 # فایل‌ها را مستقیم در پوشه مقصد می‌گذارد (نه داخل پوشه news)
+          strip_components: 1
           overwrite: true
